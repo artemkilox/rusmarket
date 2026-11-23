@@ -87,7 +87,7 @@ h2 { font-size: 16px; font-weight: 600; }
 .schedule-layout { display: grid; grid-template-columns: minmax(0, 1fr) clamp(246px, 19.7vw, 335px); align-items: stretch; gap: 8px; }
 .calendar-panel, .templates-panel { padding: 12px; background: var(--surface); border-radius: 20px; min-width: 0; }
 .templates-panel { padding: 16px; border-radius: 12px; }
-.calendar-toolbar { display: flex; gap: 8px; align-items: center; min-height: 48px; }
+.calendar-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-height: 48px; }
 .search { width: min(42%, 398px); min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 0 12px; height: 48px; border-radius: 12px; background: var(--canvas); }
 .search input { width: 100%; min-width: 0; color: var(--text); background: transparent; border: 0; }
 .search input::-webkit-search-cancel-button { display: none; }
@@ -97,7 +97,10 @@ h2 { font-size: 16px; font-weight: 600; }
 .view-tabs button[aria-pressed=true] { color: white; background: var(--dark); }
 .period-toolbar, .period-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
 .period-toolbar { justify-content: space-between; margin: 8px 0 4px; color: var(--muted); font-size: 14px; }
-.period-controls strong { color: var(--text); font-weight: 650; text-transform: capitalize; }
+.period-controls { font-size: 14px; }
+.calendar-toolbar .period-controls { margin-left: auto; }
+.period-controls .icon-button { width: 26px; }
+.period-controls strong { color: var(--text); font-weight: 650; }
 .selection-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -117,7 +120,8 @@ h2 { font-size: 16px; font-weight: 600; }
 .selection-actions button:hover:not(:disabled) { background: #ffffff26; }
 .selection-actions button:disabled { opacity: .55; }
 
-.grid-scroll { overflow: auto; max-height: 648px; }
+.grid-scroll { overflow: auto; max-height: 648px; margin-top: 20px; scrollbar-width: thin; scrollbar-color: #c8c9d1 transparent; }
+.period-toolbar + .grid-scroll { margin-top: 8px; }
 .schedule-grid { width: 100%; border-spacing: 0; table-layout: fixed; }
 .schedule-grid.week { min-width: 790px; }
 .schedule-grid.month { width: max-content; }
@@ -135,7 +139,7 @@ h2 { font-size: 16px; font-weight: 600; }
 .schedule-grid tbody tr:nth-child(even), .schedule-grid tbody tr:nth-child(even) th { background: #f6f6f8; }
 .schedule-grid tbody .employee-column { padding-inline: 8px; }
 .employee { display: flex; align-items: center; gap: 8px; }
-.employee strong { display: block; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.employee strong { display: block; font-weight: 500; letter-spacing: -.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .employee > span:last-child { min-width: 0; }
 .employee small { display: block; color: var(--muted); font-size: 12px; }
 .avatar { flex: 0 0 40px; height: 40px; display: grid; place-items: center; position: relative; overflow: hidden; background: #e8e8ed; border-radius: 5px; }
@@ -206,6 +210,7 @@ h2 { font-size: 16px; font-weight: 600; }
   .calendar-panel { padding: 8px; border-radius: 12px; }
   .search, .view-tabs { flex: 1; min-width: 0; }
   .search { padding-inline: 7px; }
+  .calendar-toolbar .period-controls { flex-basis: 100%; margin-left: 0; }
   .schedule-grid .employee-column { width: 156px; min-width: 156px; }
   .schedule-grid.week { min-width: 780px; }
 }

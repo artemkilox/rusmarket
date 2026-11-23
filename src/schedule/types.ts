@@ -12,6 +12,15 @@ export type Schedule = {
   shifts: Shift[];
 };
 
+export const shiftDragType = 'application/x-rusmarket-shift';
+export const templateDragType = 'application/x-rusmarket-template';
+
+export function getDropEffect(types: readonly string[], occupied: boolean, disabled: boolean) {
+  if (disabled) return;
+  if (types.includes(templateDragType)) return 'copy';
+  if (!occupied && types.includes(shiftDragType)) return 'move';
+}
+
 export function shiftMinutes({ startTime, endTime }: ShiftValue) {
   const minutes = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3));
   return (minutes(endTime) - minutes(startTime) + 1440) % 1440;

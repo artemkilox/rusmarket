@@ -1,7 +1,7 @@
 import { CirclePlus } from 'lucide-react';
 import { type DragEvent } from 'react';
 import { utcDate, type CalendarMode } from '../schedule/calendar';
-import { cellKey, shiftMinutes, type Cell, type Employee, type Shift } from '../schedule/types';
+import { cellKey, getDropEffect, shiftMinutes, type Cell, type Employee, type Shift } from '../schedule/types';
 import { Avatar } from './assets';
 
 const weekday = new Intl.DateTimeFormat('ru', { weekday: 'short', timeZone: 'UTC' });
@@ -22,8 +22,12 @@ interface GridProps {
   onDrop: (event: DragEvent, cell: Cell) => void;
 }
 
-export const shiftDragType = 'application/x-rusmarket-shift';
-export const templateDragType = 'application/x-rusmarket-template';
+function acceptDrag(event: DragEvent, occupied: boolean, disabled: boolean) {
+  const effect = getDropEffect(event.dataTransfer.types, occupied, disabled);
+  if (!effect) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = effect;
+}
 
 export function ScheduleGrid(props: GridProps) {
   const { mode, dates, today, employees, shifts, selected, disabled } = props;
@@ -72,16 +76,8 @@ export function ScheduleGrid(props: GridProps) {
                 draggable={!!shift && !disabled}
                 onClick={(event) => props.onSelect(cell, event.shiftKey)}
                 onDragStart={(event) => props.onShiftDrag(event, cell)}
-                onDragOver={(event) => {
-                  if (disabled) return;
-                  if (event.dataTransfer.types.includes(templateDragType)) {
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = 'copy';
-                  } else if (!shift && event.dataTransfer.types.includes(shiftDragType)) {
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = 'move';
-                  }
-                }}
+                onDragEnter={(event) => acceptDrag(event, !!shift, disabled)}
+                onDragOver={(event) => acceptDrag(event, !!shift, disabled)}
                 onDrop={(event) => props.onDrop(event, cell)}>
                 {shift
                   ? <><span className="shift-time">{shift.startTime}–{shift.endTime}</span><small>{hours.format(shiftMinutes(shift) / 60)} ч</small></>

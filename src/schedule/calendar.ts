@@ -1,5 +1,14 @@
 export type CalendarMode = 'week' | 'month';
 
+const months = [
+  'январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
+  'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь',
+];
+const shortMonths = [
+  'янв.', 'февр.', 'мар.', 'апр.', 'мая', 'июн.',
+  'июл.', 'авг.', 'сент.', 'окт.', 'нояб.', 'дек.',
+];
+
 export function utcDate(date: string) {
   return new Date(`${date}T00:00:00Z`);
 }
@@ -32,4 +41,15 @@ export function movePeriod(anchor: string, mode: CalendarMode, direction: -1 | 1
   date.setUTCDate(1);
   date.setUTCMonth(date.getUTCMonth() + direction);
   return dateKey(date);
+}
+
+export function formatPeriodLabel(from: string, to: string, mode: CalendarMode) {
+  const [startYear, startMonth, startDay] = from.split('-').map(Number);
+  const [endYear, endMonth, endDay] = to.split('-').map(Number);
+  if (mode === 'month') return `${months[startMonth - 1]} ${startYear}`;
+
+  const end = `${endDay} ${shortMonths[endMonth - 1]} ${endYear}`;
+  if (startYear !== endYear) return `${startDay} ${shortMonths[startMonth - 1]} ${startYear} – ${end}`;
+  if (startMonth !== endMonth) return `${startDay} ${shortMonths[startMonth - 1]} – ${end}`;
+  return `${startDay}–${end}`;
 }

@@ -2,15 +2,12 @@
 
 import { ChevronLeft, ChevronRight, CircleHelp, Table2, Trash2, X } from 'lucide-react';
 import { useRef, useState, type DragEvent } from 'react';
-import { getPeriod, movePeriod, utcDate, type CalendarMode } from '../schedule/calendar';
-import { cellKey, shiftMinutes, type Cell, type ShiftTemplate, type ShiftValue } from '../schedule/types';
+import { formatPeriodLabel, getPeriod, movePeriod, type CalendarMode } from '../schedule/calendar';
+import { cellKey, shiftDragType, shiftMinutes, templateDragType, type Cell, type ShiftTemplate, type ShiftValue } from '../schedule/types';
 import { DesignIcon } from './assets';
 import { QuickAssign } from './quick-assign';
-import { ScheduleGrid, shiftDragType, templateDragType } from './schedule-grid';
+import { ScheduleGrid } from './schedule-grid';
 import { useSchedule } from './use-schedule';
-
-const monthLabel = new Intl.DateTimeFormat('ru', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-const rangeLabel = new Intl.DateTimeFormat('ru', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 
 function templateValue({ id, startTime, endTime }: ShiftTemplate): ShiftValue {
   return { templateId: id, startTime, endTime };
@@ -106,7 +103,15 @@ export function ScheduleEditor({ today }: { today: string }) {
   const visibleSelection = [...selected.values()];
   const selectedEmployees = new Set(visibleSelection.map(({ employeeId }) => employeeId)).size;
   const selectedDays = new Set(visibleSelection.map(({ date }) => date)).size;
-  const label = mode === 'week' ? rangeLabel.formatRange(utcDate(from), utcDate(to)) : monthLabel.format(utcDate(from));
+  const label = formatPeriodLabel(from, to, mode);
+  const periodControls = <div className="period-controls">
+    <button className="icon-button" aria-label="Предыдущий период" disabled={saving}
+      onClick={() => navigate(movePeriod(anchor, mode, -1))}><ChevronLeft size={17} /></button>
+    <strong>{label}</strong>
+    <button className="icon-button" aria-label="Следующий период" disabled={saving}
+      onClick={() => navigate(movePeriod(anchor, mode, 1))}><ChevronRight size={17} /></button>
+    <button className="text-button" disabled={saving} onClick={() => navigate(today)}>Сегодня</button>
+  </div>;
 
   return <div className={`app-shell ${collapsed ? 'collapsed' : ''}`}>
     <aside className="sidebar" aria-label="Навигация CRM">
@@ -171,18 +176,12 @@ export function ScheduleEditor({ today }: { today: string }) {
                 <button disabled={saving} aria-pressed={mode === 'month'} onClick={() => navigate(anchor, 'month')}>Месяц</button>
                 <button disabled={saving} aria-pressed={mode === 'week'} onClick={() => navigate(anchor, 'week')}>Неделя</button>
               </div>
+              {periodControls}
             </div>}
-            <div className="period-toolbar">
-              <div className="period-controls">
-                <button className="icon-button" aria-label="Предыдущий период" disabled={saving}
-                  onClick={() => navigate(movePeriod(anchor, mode, -1))}><ChevronLeft size={17} /></button>
-                <strong>{label}</strong>
-                <button className="icon-button" aria-label="Следующий период" disabled={saving}
-                  onClick={() => navigate(movePeriod(anchor, mode, 1))}><ChevronRight size={17} /></button>
-                <button className="text-button" disabled={saving} onClick={() => navigate(today)}>Сегодня</button>
-              </div>
+            {(selected.size > 0 || pending > 0) && <div className="period-toolbar">
+              {selected.size > 0 && periodControls}
               {pending > 0 && <small>Несохранённые ячейки: {pending}</small>}
-            </div>
+            </div>}
             {loading && <p className="grid-message" role="status">Загрузка графика…</p>}
             {loadError && <div className="grid-message" role="alert">{loadError}
               <button className="text-button" onClick={() => schedule.reload()}>Повторить</button>

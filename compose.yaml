@@ -11,6 +11,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "rusmarket", "-d", "rusmarket"]
+      start_period: 120s
       interval: 2s
       timeout: 3s
       retries: 15
