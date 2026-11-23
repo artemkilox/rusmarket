@@ -1,0 +1,18 @@
+# Local AI agent instructions and artifacts
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.codex/
+.cursor/
+.claude/
+.gemini/
+.ai/
+
+node_modules/
+.next/
+.env*
+!.env.example
+next-env.d.ts
+*.tsbuildinfo
