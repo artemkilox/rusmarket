@@ -56,7 +56,7 @@ export function useSchedule(from: string, to: string) {
   }, [draft]);
 
   function edit(changes: Change[]) {
-    if (!data || saving || notice?.conflict) return;
+    if (!data || saving || notice?.conflict) return false;
     const saved = new Map(data.shifts.map((shift) => [cellKey(shift), shift]));
     const next = new Map(draft?.changes);
     for (const change of changes) {
@@ -66,10 +66,11 @@ export function useSchedule(from: string, to: string) {
     }
     if (next.size > 1000) {
       setNotice({ text: 'Сохраните текущие правки перед следующим большим изменением.', error: true });
-      return;
+      return false;
     }
     setNotice(undefined);
     setDraft(next.size ? { revision: draft?.revision ?? data.revision, changes: next } : undefined);
+    return true;
   }
 
   async function save(publish: boolean) {

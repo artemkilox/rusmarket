@@ -81,7 +81,9 @@ export function ScheduleEditor({ today }: { today: string }) {
   }
 
   function apply(shift: ShiftValue | null) {
-    edit([...selected.values()].map((cell) => ({ ...cell, shift })));
+    if (edit([...selected.values()].map((cell) => ({ ...cell, shift })))) {
+      clearSelection();
+    }
   }
 
   function drop(event: DragEvent, target: Cell) {
